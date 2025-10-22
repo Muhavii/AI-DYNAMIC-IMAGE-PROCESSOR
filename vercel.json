@@ -22,16 +22,9 @@
       "dest": "/"
     }
   ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/"
-    }
-  ],
   "env": {
     "NODE_ENV": "production"
   },
-  "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "cleanUrls": true,
   "trailingSlash": false,
