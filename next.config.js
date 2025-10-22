@@ -35,16 +35,46 @@ const nextConfig = {
     ];
   },
 
-  // Webpack configuration
-  webpack: (config) => {
-    config.resolve.alias['@'] = __dirname + '/src';
+  // Webpack configuration - optimized for Edge Runtime
+  webpack: (config, { isServer }) => {
+    // Configure path aliases
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': __dirname + '/src',
+    };
+    
+    // Only apply these configurations for client-side code
+    if (!isServer) {
+      // Disable Node.js polyfills that aren't needed in the browser
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        dns: false,
+        child_process: false,
+        dgram: false,
+        zlib: false,
+        http2: false,
+        http: false,
+        https: false,
+        stream: false,
+        crypto: false,
+        path: false,
+        os: false,
+      };
+    }
+    
     return config;
   },
   
   // Enable server actions
   experimental: {
-    serverActions: true
+    serverActions: true,
   },
+  
+  // Explicitly enable webpack 5
+  webpack5: true,
 };
 
 module.exports = nextConfig;
