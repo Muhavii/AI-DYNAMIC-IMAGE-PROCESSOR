@@ -1,15 +1,16 @@
 import { NextResponse } from 'next/server';
 import { processImageWithAI } from '@/lib/aiService';
 
+// Route Segment Config
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30; // seconds
 
-export const config = {
-  runtime: 'edge',
-  api: {
-    bodyParser: false,
-  },
-};
+// Runtime configuration
+export const runtime = 'edge';
+
+// Disable body parsing for file uploads
+export const dynamicParams = true;
+export const fetchCache = 'force-no-store';
 
 function parseFormData(formData: FormData): { file: File | null } {
   const file = formData.get('file') as File | null;
