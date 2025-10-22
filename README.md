@@ -11,14 +11,14 @@
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
   
-  [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-000000?style=for-the-badge&logo=vercel&labelColor=000000)](https://ai-image-processor-muhavi.vercel.app)
+  [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-000000?style=for-the-badge&logo=vercel&labelColor=000000)](https://muhavis-ai-dip.vercel.app/)
 
   <img src="./public/images/screenshot-home.png" alt="Home Page" width="45%"/> <img src="./public/images/screenshot-results.png" alt="Results Page" width="45%"/>
 </div>
 
 ## 🚀 Live Demo
 
-Experience the application live: [https://ai-image-processor-muhavi.vercel.app](https://ai-image-processor-muhavi.vercel.app)
+Experience the application live: [https://muhavis-ai-dip.vercel.app/](https://muhavis-ai-dip.vercel.app/)
 
 ## ✨ Features
 
@@ -245,11 +245,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <div align="center">
-  Made with ❤️ by Muhavi <a href="https://github.com/Muhavii">Muhavi</a>
-  <br>
-  <a href="https://twitter.com/yourtwitter">Twitter</a> • 
-  <a href="https://linkedin.com/in/yourprofile">LinkedIn</a> • 
-  <a href="https://github.com/yourusername">GitHub</a>
+  Made with ❤️ by Muhavi
 </div>
 
 ## Integrating with AI Services
