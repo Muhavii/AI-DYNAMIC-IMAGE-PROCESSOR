@@ -80,12 +80,10 @@ const nextConfig = {
   // Enable production browser source maps
   productionBrowserSourceMaps: false,
   
-  // Configure page revalidation (ISR)
+  // Configure experimental features
   experimental: {
-    // Enable server components (if using Next.js 13+)
+    // Enable server components
     serverComponents: true,
-    // Enable new Next.js Link behavior
-    newNextLinkBehavior: true,
     // Optimize package imports
     optimizePackageImports: ['@heroicons/react', 'lodash'],
   },
