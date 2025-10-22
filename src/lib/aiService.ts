@@ -15,20 +15,31 @@ interface AIPrediction {
 const MODEL_NAME = 'gemini-2.5-flash';
 
 async function fileToBase64(file: File): Promise<string> {
-  if (typeof window !== 'undefined') {
+  // For Edge Runtime, we'll use the File API directly if available
+  if (typeof FileReader === 'undefined') {
+    // Edge Runtime environment
+    const arrayBuffer = await file.arrayBuffer();
+    const bytes = new Uint8Array(arrayBuffer);
+    let binary = '';
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return `data:${file.type};base64,${btoa(binary)}`;
+  } else {
     // Browser environment
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          resolve(reader.result);
+        } else {
+          reject(new Error('Failed to read file as data URL'));
+        }
+      };
       reader.onerror = error => reject(error);
+      reader.readAsDataURL(file);
     });
-  } else {
-    // Node.js environment
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const base64 = buffer.toString('base64');
-    return `data:${file.type};base64,${base64}`;
   }
 }
 

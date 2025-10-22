@@ -46,9 +46,15 @@ export async function POST(request: Request) {
     // Generate a unique ID for this analysis
     const analysisId = Math.random().toString(36).substring(2, 9);
     
-    // Convert the file to base64 for display
+    // Convert the file to base64 for display - using a method that works in Edge Runtime
     const arrayBuffer = await file.arrayBuffer();
-    const base64Data = Buffer.from(arrayBuffer).toString('base64');
+    const bytes = new Uint8Array(arrayBuffer);
+    let binary = '';
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    const base64Data = btoa(binary);
     const imageUrl = `data:${file.type};base64,${base64Data}`;
     
     return NextResponse.json({

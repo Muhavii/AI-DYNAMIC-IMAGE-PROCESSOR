@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { FiLoader, FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
+import { FiLoader, FiAlertCircle, FiCheckCircle, FiImage } from 'react-icons/fi';
 
 interface AnalysisResult {
   id: string;
