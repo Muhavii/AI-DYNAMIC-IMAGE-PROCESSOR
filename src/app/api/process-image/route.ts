@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 import { processImageWithAI } from '@/lib/aiService';
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 30; // seconds
+
 export const config = {
+  runtime: 'edge',
   api: {
     bodyParser: false,
   },
