@@ -1,4 +1,35 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+
+// Define the database types
+type Database = {
+  public: {
+    Tables: {
+      image_analyses: {
+        Row: {
+          id: string;
+          created_at: string;
+          image_path: string;
+          analysis_data: any;
+          user_id: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          image_path: string;
+          analysis_data: any;
+          user_id?: string | null;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          image_path?: string;
+          analysis_data?: any;
+          user_id?: string | null;
+        };
+      };
+    };
+  };
+};
 
 // Check if we're in a browser environment
 const isBrowser = typeof window !== 'undefined';
@@ -7,14 +38,11 @@ const isBrowser = typeof window !== 'undefined';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-// Create a type-safe Supabase client
-type SupabaseClient = ReturnType<typeof createClient>;
-
 // Initialize the Supabase client
-let supabase: SupabaseClient | null = null;
+let supabase: SupabaseClient<Database> | null = null;
 
 if (supabaseUrl && supabaseAnonKey) {
-  supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     auth: {
       persistSession: isBrowser,
       autoRefreshToken: isBrowser,
