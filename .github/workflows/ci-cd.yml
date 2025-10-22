@@ -1,0 +1,112 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# Environment variables available to all jobs and steps in this workflow
+env:
+  NODE_VERSION: '18.x'
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    # Environment variables specific to this job
+    env:
+      CI: true
+      NODE_ENV: test
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: '**/package-lock.json'
+    
+    - name: Install Dependencies
+      run: npm ci --prefer-offline
+    
+    - name: Run Linter
+      run: npm run lint
+    
+    - name: Run Tests
+      run: npm test -- --passWithNoTests
+    
+    - name: Build Application
+      run: npm run build
+      env:
+        # These are only needed for the build, not for testing
+        NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL || 'dummy-value' }}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'dummy-value' }}
+        GEMINI_API_KEY: ${{ vars.GEMINI_API_KEY || secrets.GEMINI_API_KEY || 'dummy-value' }}
+    
+    - name: Upload Build Artifacts
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: |
+          .next/
+          public/
+        retention-days: 1
+
+  deploy:
+    name: Deploy to Vercel
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    - name: Install Dependencies
+      run: npm ci --prefer-offline
+    
+    - name: Deploy to Vercel
+      id: deploy
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN || '' }}
+        vercel-args: '--prod'
+      env:
+        NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL || '' }}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || '' }}
+        GEMINI_API_KEY: ${{ vars.GEMINI_API_KEY || secrets.GEMINI_API_KEY || '' }}
+    
+    - name: Post Deployment Test
+      if: success() && steps.deploy.outputs.preview-url != ''
+      run: |
+        echo "Running post-deployment test..."
+        curl -sSf ${{ steps.deploy.outputs.preview-url }}
+      env:
+        DEPLOY_URL: ${{ steps.deploy.outputs.preview-url }}
+
+  notify:
+    name: Notify Status
+    needs: [build-and-test, deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - name: Notify Workflow Status
+      if: contains(needs.*.result, 'failure')
+      run: |
+        echo "One or more jobs failed!"
+        # Add notification logic here (Slack, Discord, etc.)
+      env:
+        STATUS: ${{ contains(needs.*.result, 'failure') && 'failure' || 'success' }}
